@@ -10,3 +10,7 @@ Please feel free to send me an [email](mailto:hojunlee@wustl.edu), or open an "I
 
 All data and code necessary to reproduce the results presented in this paper are publicly available in this repository. This includes the data collection code, raw data, and analysis scripts used in our study. No additional data or resources beyond those contained in this repository are required to replicate our findings.
 
+## Naming Inconsistencies
+
+You may notice that in the naming of conditions used for data collection (i.e., "Stereotype-Consistent" and "Stereotype-Inconsistent") is inconsistent with that found in the Pre-print (i.e., "Association-Compatible" and "Association-Incompatible"). The naming of the conditions were modified during writing so that it captures those that are not about stereotypes. The Young/Old People + Pleasant/Unpleasant RM-IAT, for example, was about attitudes. 
+
