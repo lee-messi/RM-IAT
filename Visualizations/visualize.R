@@ -8,68 +8,90 @@
 
 if(!require("tidyverse")){install.packages("tidyverse", dependencies = TRUE); require("tidyverse")}
 if(!require("ggsci")){install.packages("ggsci", dependencies = TRUE); require("ggsci")}
-if(!require("ggsignif")){install.packages("ggsignif", dependencies = TRUE); require("ggsignif")}
+if(!require("effsize")){install.packages("effsize", dependencies = TRUE); require("effsize")}
 if(!require("Cairo")){install.packages("Cairo", dependencies = TRUE); require("Cairo")}
 
 # Import Data ------------------------------------------------------------------
 
-flowers_insects = read.csv('../0. flowers_insects/flowers_insects.csv') %>% 
-  mutate(prompt = as.factor(prompt),
-         condition = as.factor(condition), 
-         IAT = "Flowers/Insects +\nPleasant/Unpleasant")
+load('../o3-mini/Visualizations/o3_mini.RData')
+load('../Claude3.7/Visualizations/claude.RData')
+load('../DeepSeek-R1/Visualizations/deepseek_r1.RData')
 
-instruments_weapons = read.csv('../1. instruments_weapons/instruments_weapons.csv') %>% 
-  mutate(prompt = as.factor(prompt),
-         condition = as.factor(condition), 
-         IAT = "Instruments/Weapons +\nPleasant/Unpleasant")
+o3_mini = o3_mini %>% select(c('condition', 'tokens', 'IAT', 'model'))
+claude = claude %>% select(c('condition', 'tokens', 'IAT', 'model'))
+deepseek_r1 = deepseek_r1 %>% select(c('condition', 'tokens', 'IAT', 'model'))
 
-race_original = read.csv('../2. race_original/race_original.csv') %>% 
-  mutate(prompt = as.factor(prompt),
-         condition = as.factor(condition),
-         IAT = "European/African Americans +\nPleasant/Unpleasant (1)") %>% 
-  filter(attribute %in% c('Pleasant', 'Unpleasant'))
+all_IATs = rbind(o3_mini, claude, deepseek_r1)
 
-race_bertrand = read.csv('../3. race_bertrand/race_bertrand.csv') %>% 
-  mutate(prompt = as.factor(prompt),
-         condition = as.factor(condition),
-         IAT = "European/African Americans +\nPleasant/Unpleasant (2)") %>% 
-  filter(attribute %in% c('Pleasant', 'Unpleasant'))
+# Calculate effect sizes -------------------------------------------------------
 
-race_nosek = read.csv('../4. race_nosek/race_nosek.csv') %>% 
-  mutate(prompt = as.factor(prompt),
-         condition = as.factor(condition),
-         IAT = "European/African Americans +\nPleasant/Unpleasant (3)") %>% 
-  filter(attribute %in% c('Pleasant', 'Unpleasant'))
+# Function to calculate Cohen's d for each IAT and model combination
+calculate_cohens_d <- function(data) {
+  # Get unique IATs and models
+  iats <- unique(data$IAT)
+  models <- unique(data$model)
+  
+  # Initialize empty dataframe for results
+  results <- data.frame(
+    IAT = character(),
+    model = character(),
+    cohens_d = numeric(),
+    lower_ci = numeric(),
+    upper_ci = numeric(),
+    stringsAsFactors = FALSE
+  )
+  
+  # Loop through each IAT and model to calculate Cohen's d
+  for (i in iats) {
+    for (m in models) {
+      # Filter data for this IAT and model
+      subset_data <- data %>% filter(IAT == i, model == m)
+      
+      # Get data for each condition
+      cond1_data <- subset_data %>% filter(condition == "Association-Incompatible") %>% pull(tokens)
+      cond2_data <- subset_data %>% filter(condition == "Association-Compatible") %>% pull(tokens)
+      
+      # Skip if either condition has insufficient data
+      if (length(cond1_data) < 2 || length(cond2_data) < 2) {
+        next
+      }
+      
+      # Handle potential typo in condition name (Incmpatible vs Incompatible)
+      if (length(cond2_data) == 0) {
+        cond2_data <- subset_data %>% filter(condition == "Association-Incmpatible") %>% pull(tokens)
+      }
+      
+      # Calculate Cohen's d
+      d_result <- cohen.d(cond1_data, cond2_data)
+      
+      # Calculate 95% confidence interval (approximate method)
+      # Formula: d ± 1.96 * sqrt((n1 + n2) / (n1 * n2) + d^2 / (2 * (n1 + n2)))
+      n1 <- length(cond1_data)
+      n2 <- length(cond2_data)
+      d <- d_result$estimate
+      se <- sqrt((n1 + n2) / (n1 * n2) + d^2 / (2 * (n1 + n2)))
+      ci_lower <- d - 1.96 * se
+      ci_upper <- d + 1.96 * se
+      
+      # Add to results
+      results <- rbind(results, data.frame(
+        IAT = i,
+        model = m,
+        cohens_d = d,
+        lower_ci = ci_lower,
+        upper_ci = ci_upper,
+        stringsAsFactors = FALSE
+      ))
+    }
+  }
+  
+  return(results)
+}
 
-career_family = read.csv('../5. career_family/career_family.csv') %>% 
-  mutate(prompt = as.factor(prompt),
-         condition = as.factor(condition),
-         IAT = "Men/Women +\nCareer/Family")
+# Calculate Cohen's d for our data
+effect_sizes <- calculate_cohens_d(all_IATs)
 
-math_arts = read.csv('../6. math_arts/math_arts.csv') %>% 
-  mutate(prompt = as.factor(prompt),
-         condition = as.factor(condition),
-         IAT = "Men/Women +\nMathematics/Arts")
-
-science_arts = read.csv('../7. science_arts/science_arts.csv') %>% 
-  mutate(prompt = as.factor(prompt),
-         condition = as.factor(condition),
-         IAT = "Men/Women +\nScience/Arts")
-
-mental_physical = read.csv('../8. mental_physical/mental_physical.csv') %>% 
-  mutate(prompt = as.factor(prompt),
-         condition = as.factor(condition),
-         IAT = "Mental/Physical Diseases +\nTemporary/Permanent")
-
-young_old = read.csv('../9. young_old/young_old.csv') %>% 
-  mutate(prompt = as.factor(prompt),
-         condition = as.factor(condition),
-         IAT = "Young/Old People +\nPleasant/Unpleasant")
-
-all_IATs = rbind(flowers_insects, instruments_weapons, race_original, 
-                 race_bertrand, race_nosek, career_family, math_arts,
-                 science_arts, mental_physical, young_old) %>% 
-  mutate(IAT = as.factor(IAT)) %>% 
+effect_sizes = effect_sizes %>% 
   mutate(IAT = factor(IAT, levels = c("Flowers/Insects +\nPleasant/Unpleasant", 
                                       "Instruments/Weapons +\nPleasant/Unpleasant",
                                       "European/African Americans +\nPleasant/Unpleasant (1)",
@@ -80,36 +102,34 @@ all_IATs = rbind(flowers_insects, instruments_weapons, race_original,
                                       "Men/Women +\nScience/Arts",
                                       "Mental/Physical Diseases +\nTemporary/Permanent",
                                       "Young/Old People +\nPleasant/Unpleasant"))) %>% 
-  mutate(condition = case_when(
-    condition == "Stereotype-Consistent" ~ "Association-Compatible",
-    condition == "Stereotype-Inconsistent" ~ "Association-Incompatible",
-    TRUE ~ condition
-  ))
+  mutate(model = factor(model, levels = c('o3-mini', 'DeepSeek-R1', 'Claude 3.7 Sonnet')))
+  
 
-# Bar Plots --------------------------------------------------------------------
-
-# Create the plot
-ggplot(all_IATs, aes(x = condition, y = tokens, fill = condition)) +
-  geom_bar(stat = "summary", fun = "mean", position = "dodge") +
-  geom_errorbar(stat = "summary", fun.data = "mean_se", 
-                position = position_dodge(width = 0.9), width = 0.3) +
-  facet_wrap(~IAT, scales = "fixed", nrow = 2) +  # Changed to fixed scales
-  scale_fill_jama() +  # Using Nature Publishing Group palette from ggsci
+ggplot(effect_sizes, aes(x = IAT, y = cohens_d, fill = model, color = model)) +
+  geom_point(size = 3, position = position_dodge(width = 0.8)) +
+  geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci), 
+                position = position_dodge(width = 0.8), width = 0.2) +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "gray50") +
+  # Add vertical lines between categories
+  geom_vline(xintercept = seq(1.5, length(unique(effect_sizes$IAT))-0.5), 
+             linetype = "dotted", color = "gray70") +
+  scale_fill_jama() +
+  scale_color_jama() +
   theme_bw() +
-  coord_cartesian(ylim = c(0, 574)) + 
-  scale_y_continuous(expand = c(0, 0)) +
   labs(
-    y = "Reasoning Token Counts",
-    fill = "Condition"
+    y = "Cohen's d (Incompatible vs. Compatible)",
+    fill = "Model",
+    color = "Model"
   ) +
   theme(
-    legend.position = "bottom",
-    legend.title = element_blank(),
+    legend.position = "top",
     axis.title.x = element_blank(),
-    axis.text.x = element_blank(),
-    axis.ticks.x = element_blank(),
     panel.grid.minor = element_blank(),
-    panel.spacing = unit(0.5, "lines"))
+    panel.grid.major.x = element_blank(),  # Remove x-axis major grid lines
+    panel.spacing = unit(0.5, "lines"),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
 
-ggsave('main.pdf', width = 10, height = 6, dpi = 'retina', device = cairo_pdf)
+
+ggsave('main.pdf', width = 11, height = 6, dpi = 'retina', device = cairo_pdf)
 
