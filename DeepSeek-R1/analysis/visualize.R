@@ -13,65 +13,66 @@ if(!require("Cairo")){install.packages("Cairo", dependencies = TRUE); require("C
 
 # Import Data ------------------------------------------------------------------
 
-flowers_insects = read.csv('../0. flowers_insects/flowers_insects.csv') %>% 
-  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
+flowers_insects = read.csv('../flowers_insects.csv') %>% 
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition), 
-         IAT = "Flowers/Insects +\nPleasant/Unpleasant")
+         IAT = "Flowers/Insects +\nPleasant/Unpleasant",
+         refusal = !attribute %in% c('Pleasant', 'Unpleasant'))
 
-instruments_weapons = read.csv('../1. instruments_weapons/instruments_weapons.csv') %>% 
-  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
+instruments_weapons = read.csv('../instruments_weapons.csv') %>% 
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition), 
-         IAT = "Instruments/Weapons +\nPleasant/Unpleasant")
+         IAT = "Instruments/Weapons +\nPleasant/Unpleasant",
+         refusal = !attribute %in% c('Pleasant', 'Unpleasant'))
 
-race_original = read.csv('../2. race_original/race_original.csv') %>% 
+race_original = read.csv('../race_original.csv') %>% 
+  mutate(prompt = as.factor(prompt),
+         condition = as.factor(condition),
+         IAT = "European/African Americans +\nPleasant/Unpleasant (1)",
+         refusal = !attribute %in% c('Pleasant', 'Unpleasant'))
+
+race_bertrand = read.csv('../race_bertrand.csv') %>%  
+  mutate(prompt = as.factor(prompt),
+         condition = as.factor(condition),
+         IAT = "European/African Americans +\nPleasant/Unpleasant (2)",
+         refusal = !attribute %in% c('Pleasant', 'Unpleasant'))
+
+race_nosek = read.csv('../race_nosek.csv') %>%  
   filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition),
-         IAT = "European/African Americans +\nPleasant/Unpleasant (1)")
+         IAT = "European/African Americans +\nPleasant/Unpleasant (3)",
+         refusal = !attribute %in% c('Pleasant', 'Unpleasant'))
 
-race_bertrand = read.csv('../3. race_bertrand/race_bertrand.csv') %>%  
-  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
+career_family = read.csv('../career_family.csv') %>% 
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition),
-         IAT = "European/African Americans +\nPleasant/Unpleasant (2)")
+         IAT = "Men/Women +\nCareer/Family",
+         refusal = !attribute %in% c('Career', 'Family'))
 
-race_nosek = read.csv('../4. race_nosek/race_nosek.csv') %>%  
-  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
+math_arts = read.csv('../math_arts.csv') %>% 
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition),
-         IAT = "European/African Americans +\nPleasant/Unpleasant (3)")
+         IAT = "Men/Women +\nMathematics/Arts",
+         refusal = !attribute %in% c('Math', 'Arts'))
 
-career_family = read.csv('../5. career_family/career_family.csv') %>% 
-  filter(attribute %in% c('Career', 'Family')) %>%
+science_arts = read.csv('../science_arts.csv') %>% 
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition),
-         IAT = "Men/Women +\nCareer/Family")
+         IAT = "Men/Women +\nScience/Arts",
+         refusal = !attribute %in% c('Science', 'Arts'))
 
-math_arts = read.csv('../6. math_arts/math_arts.csv') %>% 
-  filter(attribute %in% c('Math', 'Arts')) %>%
+mental_physical = read.csv('../mental_physical.csv') %>% 
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition),
-         IAT = "Men/Women +\nMathematics/Arts")
+         IAT = "Mental/Physical Diseases +\nTemporary/Permanent",
+         refusal = !attribute %in% c('Temporary', 'Permanent'))
 
-science_arts = read.csv('../7. science_arts/science_arts.csv') %>% 
-  filter(attribute %in% c('Science', 'Arts')) %>%
+young_old = read.csv('../young_old.csv') %>%  
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition),
-         IAT = "Men/Women +\nScience/Arts")
-
-mental_physical = read.csv('../8. mental_physical/mental_physical.csv') %>% 
-  filter(attribute %in% c('Temporary', 'Permanent')) %>%
-  mutate(prompt = as.factor(prompt),
-         condition = as.factor(condition),
-         IAT = "Mental/Physical Diseases +\nTemporary/Permanent")
-
-young_old = read.csv('../9. young_old/young_old.csv') %>%  
-  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
-  mutate(prompt = as.factor(prompt),
-         condition = as.factor(condition),
-         IAT = "Young/Old People +\nPleasant/Unpleasant")
+         IAT = "Young/Old People +\nPleasant/Unpleasant",
+         refusal = !attribute %in% c('Pleasant', 'Unpleasant'))
 
 deepseek_r1 = rbind(flowers_insects, instruments_weapons, race_original, 
                     race_bertrand, race_nosek, career_family, math_arts,
@@ -97,6 +98,7 @@ deepseek_r1 = rbind(flowers_insects, instruments_weapons, race_original,
 save(deepseek_r1, file = 'deepseek_r1.RData')
 
 deepseek_r1 = deepseek_r1 %>% 
+  filter(!refusal) %>%
   group_by(IAT) %>%
   mutate(tokens = scale(tokens)) %>%
   ungroup()
