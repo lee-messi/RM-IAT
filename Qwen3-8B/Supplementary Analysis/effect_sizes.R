@@ -14,180 +14,178 @@ if(!require("effsize")){install.packages("effsize", dependencies = TRUE); requir
 
 # Import Data ------------------------------------------------------------------
 
-flowers_insects = read.csv('../0. flowers_insects/flowers_insects.csv') %>% 
-  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
-  mutate(prompt = as.factor(prompt),
+flowers_insects = read.csv('../flowers_insects.csv') %>% 
+  filter(attribute %in% c('pleasant', 'unpleasant')) %>%
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition), 
          IAT = "Flowers/Insects +\nPleasant/Unpleasant")
 
-instruments_weapons = read.csv('../1. instruments_weapons/instruments_weapons.csv') %>% 
-  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
-  mutate(prompt = as.factor(prompt),
+instruments_weapons = read.csv('../instruments_weapons.csv') %>% 
+  filter(attribute %in% c('pleasant', 'unpleasant')) %>%
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition), 
          IAT = "Instruments/Weapons +\nPleasant/Unpleasant")
 
-race_original = read.csv('../2. race_original/race_original.csv') %>% 
-  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
-  mutate(prompt = as.factor(prompt),
+race_original = read.csv('../race_original.csv') %>% 
+  filter(attribute %in% c('pleasant', 'unpleasant')) %>%
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "European/African Americans +\nPleasant/Unpleasant (1)")
 
-race_bertrand = read.csv('../3. race_bertrand/race_bertrand.csv') %>%  
-  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
-  mutate(prompt = as.factor(prompt),
+race_bertrand = read.csv('../race_bertrand.csv') %>%  
+  filter(attribute %in% c('pleasant', 'unpleasant')) %>%
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "European/African Americans +\nPleasant/Unpleasant (2)")
 
-race_nosek = read.csv('../4. race_nosek/race_nosek.csv') %>%  
-  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
-  mutate(prompt = as.factor(prompt),
+race_nosek = read.csv('../race_nosek.csv') %>%  
+  filter(attribute %in% c('pleasant', 'unpleasant')) %>%
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "European/African Americans +\nPleasant/Unpleasant (3)")
 
-career_family = read.csv('../5. career_family/career_family.csv') %>% 
-  filter(attribute %in% c('Career', 'Family')) %>%
-  mutate(prompt = as.factor(prompt),
+career_family = read.csv('../career_family.csv') %>% 
+  filter(attribute %in% c('career', 'family')) %>%
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "Men/Women +\nCareer/Family")
 
-math_arts = read.csv('../6. math_arts/math_arts.csv') %>% 
-  filter(attribute %in% c('Math', 'Arts')) %>%
-  mutate(prompt = as.factor(prompt),
+math_arts = read.csv('../math_arts.csv') %>% 
+  filter(attribute %in% c('math', 'arts')) %>%
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "Men/Women +\nMathematics/Arts")
 
-science_arts = read.csv('../7. science_arts/science_arts.csv') %>% 
-  filter(attribute %in% c('Science', 'Arts')) %>%
-  mutate(prompt = as.factor(prompt),
+science_arts = read.csv('../science_arts.csv') %>% 
+  filter(attribute %in% c('science', 'arts')) %>%
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "Men/Women +\nScience/Arts")
 
-mental_physical = read.csv('../8. mental_physical/mental_physical.csv') %>% 
-  filter(attribute %in% c('Temporary', 'Permanent')) %>%
-  mutate(prompt = as.factor(prompt),
+mental_physical = read.csv('../mental_physical.csv') %>% 
+  filter(attribute %in% c('temporary', 'permanent')) %>%
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "Mental/Physical Diseases +\nTemporary/Permanent")
 
-young_old = read.csv('../9. young_old/young_old.csv') %>%  
-  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
-  mutate(prompt = as.factor(prompt),
+young_old = read.csv('../young_old.csv') %>%  
+  filter(attribute %in% c('pleasant', 'unpleasant')) %>%
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "Young/Old People +\nPleasant/Unpleasant")
 
 # Effect sizes -----------------------------------------------------------------
 
-cohen.d(flowers_insects %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        flowers_insects %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(flowers_insects %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        flowers_insects %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(instruments_weapons %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        instruments_weapons %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(instruments_weapons %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        instruments_weapons %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(race_original %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        race_original %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(race_original %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        race_original %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(race_bertrand %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        race_bertrand %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(race_bertrand %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        race_bertrand %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(race_nosek %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        race_nosek %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(race_nosek %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        race_nosek %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(career_family %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        career_family %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(career_family %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        career_family %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(math_arts %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        math_arts %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(math_arts %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        math_arts %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(science_arts %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        science_arts %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(science_arts %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        science_arts %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(mental_physical %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        mental_physical %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(mental_physical %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        mental_physical %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(young_old %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        young_old %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(young_old %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        young_old %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
 # Import Data (with refusals) --------------------------------------------------
 
-flowers_insects = read.csv('../0. flowers_insects/flowers_insects.csv') %>% 
-  mutate(prompt = as.factor(prompt),
+flowers_insects = read.csv('../flowers_insects.csv') %>% 
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition), 
          IAT = "Flowers/Insects +\nPleasant/Unpleasant")
 
-instruments_weapons = read.csv('../1. instruments_weapons/instruments_weapons.csv') %>% 
-  mutate(prompt = as.factor(prompt),
+instruments_weapons = read.csv('../instruments_weapons.csv') %>% 
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition), 
          IAT = "Instruments/Weapons +\nPleasant/Unpleasant")
 
-race_original = read.csv('../2. race_original/race_original.csv') %>% 
-  mutate(prompt = as.factor(prompt),
+race_original = read.csv('../race_original.csv') %>% 
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "European/African Americans +\nPleasant/Unpleasant (1)")
 
-race_bertrand = read.csv('../3. race_bertrand/race_bertrand.csv') %>%  
-  mutate(prompt = as.factor(prompt),
+race_bertrand = read.csv('../race_bertrand.csv') %>%  
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "European/African Americans +\nPleasant/Unpleasant (2)")
 
-race_nosek = read.csv('../4. race_nosek/race_nosek.csv') %>%  
-  mutate(prompt = as.factor(prompt),
+race_nosek = read.csv('../race_nosek.csv') %>%  
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "European/African Americans +\nPleasant/Unpleasant (3)")
 
-career_family = read.csv('../5. career_family/career_family.csv') %>% 
-  mutate(prompt = as.factor(prompt),
+career_family = read.csv('../career_family.csv') %>% 
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "Men/Women +\nCareer/Family")
 
-math_arts = read.csv('../6. math_arts/math_arts.csv') %>% 
-  mutate(prompt = as.factor(prompt),
+math_arts = read.csv('../math_arts.csv') %>% 
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "Men/Women +\nMathematics/Arts")
 
-science_arts = read.csv('../7. science_arts/science_arts.csv') %>% 
-  mutate(prompt = as.factor(prompt),
+science_arts = read.csv('../science_arts.csv') %>% 
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "Men/Women +\nScience/Arts")
 
-mental_physical = read.csv('../8. mental_physical/mental_physical.csv') %>% 
-  mutate(prompt = as.factor(prompt),
+mental_physical = read.csv('../mental_physical.csv') %>% 
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "Mental/Physical Diseases +\nTemporary/Permanent")
 
-young_old = read.csv('../9. young_old/young_old.csv') %>%  
-  mutate(prompt = as.factor(prompt),
+young_old = read.csv('../young_old.csv') %>%  
+  mutate(prompt_id = as.factor(prompt_id),
          condition = as.factor(condition),
          IAT = "Young/Old People +\nPleasant/Unpleasant")
 
 # Effect sizes (with refusals) -------------------------------------------------
 
-cohen.d(flowers_insects %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        flowers_insects %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(flowers_insects %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        flowers_insects %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(instruments_weapons %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        instruments_weapons %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(instruments_weapons %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        instruments_weapons %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(race_original %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        race_original %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(race_original %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        race_original %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(race_bertrand %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        race_bertrand %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(race_bertrand %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        race_bertrand %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(race_nosek %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        race_nosek %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(race_nosek %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        race_nosek %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(career_family %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        career_family %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(career_family %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        career_family %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(math_arts %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        math_arts %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(math_arts %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        math_arts %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(science_arts %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        science_arts %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(science_arts %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        science_arts %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(mental_physical %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        mental_physical %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
+cohen.d(mental_physical %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        mental_physical %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(young_old %>% filter(condition == 'Stereotype-Inconsistent') %>% pull(tokens),
-        young_old %>% filter(condition == 'Stereotype-Consistent') %>% pull(tokens))
-
-
+cohen.d(young_old %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
+        young_old %>% filter(condition == 'Association Compatible') %>% pull(tokens))
