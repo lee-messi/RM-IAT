@@ -14,67 +14,66 @@ if(!require("Cairo")){install.packages("Cairo", dependencies = TRUE); require("C
 # Import Data ------------------------------------------------------------------
 
 flowers_insects = read.csv('../flowers_insects.csv') %>% 
+  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition), 
-         IAT = "Flowers/Insects +\nPleasant/Unpleasant",
-         refusal = !attribute %in% c('Pleasant', 'Unpleasant'))
+         IAT = "Flowers/Insects +\nPleasant/Unpleasant")
 
 instruments_weapons = read.csv('../instruments_weapons.csv') %>% 
+  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition), 
-         IAT = "Instruments/Weapons +\nPleasant/Unpleasant",
-         refusal = !attribute %in% c('Pleasant', 'Unpleasant'))
+         IAT = "Instruments/Weapons +\nPleasant/Unpleasant")
 
 race_original = read.csv('../race_original.csv') %>% 
+  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition),
-         IAT = "European/African Americans +\nPleasant/Unpleasant (1)",
-         refusal = !attribute %in% c('Pleasant', 'Unpleasant'))
+         IAT = "European/African Americans +\nPleasant/Unpleasant (1)")
 
 race_bertrand = read.csv('../race_bertrand.csv') %>%  
+  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition),
-         IAT = "European/African Americans +\nPleasant/Unpleasant (2)",
-         refusal = !attribute %in% c('Pleasant', 'Unpleasant'))
+         IAT = "European/African Americans +\nPleasant/Unpleasant (2)")
 
 race_nosek = read.csv('../race_nosek.csv') %>%  
   filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition),
-         IAT = "European/African Americans +\nPleasant/Unpleasant (3)",
-         refusal = !attribute %in% c('Pleasant', 'Unpleasant'))
+         IAT = "European/African Americans +\nPleasant/Unpleasant (3)")
 
 career_family = read.csv('../career_family.csv') %>% 
+  filter(attribute %in% c('Career', 'Family')) %>%
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition),
-         IAT = "Men/Women +\nCareer/Family",
-         refusal = !attribute %in% c('Career', 'Family'))
+         IAT = "Men/Women +\nCareer/Family")
 
 math_arts = read.csv('../math_arts.csv') %>% 
+  filter(attribute %in% c('Math', 'Arts')) %>%
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition),
-         IAT = "Men/Women +\nMathematics/Arts",
-         refusal = !attribute %in% c('Math', 'Arts'))
+         IAT = "Men/Women +\nMathematics/Arts")
 
 science_arts = read.csv('../science_arts.csv') %>% 
+  filter(attribute %in% c('Science', 'Arts')) %>%
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition),
-         IAT = "Men/Women +\nScience/Arts",
-         refusal = !attribute %in% c('Science', 'Arts'))
+         IAT = "Men/Women +\nScience/Arts")
 
 mental_physical = read.csv('../mental_physical.csv') %>% 
+  filter(attribute %in% c('Temporary', 'Permanent')) %>%
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition),
-         IAT = "Mental/Physical Diseases +\nTemporary/Permanent",
-         refusal = !attribute %in% c('Temporary', 'Permanent'))
+         IAT = "Mental/Physical Diseases +\nTemporary/Permanent")
 
 young_old = read.csv('../young_old.csv') %>%  
+  filter(attribute %in% c('Pleasant', 'Unpleasant')) %>%
   mutate(prompt = as.factor(prompt),
          condition = as.factor(condition),
-         IAT = "Young/Old People +\nPleasant/Unpleasant",
-         refusal = !attribute %in% c('Pleasant', 'Unpleasant'))
+         IAT = "Young/Old People +\nPleasant/Unpleasant")
 
-deepseek_r1 = rbind(flowers_insects, instruments_weapons, race_original, 
+o3mini = rbind(flowers_insects, instruments_weapons, race_original, 
                     race_bertrand, race_nosek, career_family, math_arts,
                     science_arts, mental_physical, young_old) %>% 
   mutate(IAT = as.factor(IAT)) %>% 
@@ -88,17 +87,12 @@ deepseek_r1 = rbind(flowers_insects, instruments_weapons, race_original,
                                       "Men/Women +\nScience/Arts",
                                       "Mental/Physical Diseases +\nTemporary/Permanent",
                                       "Young/Old People +\nPleasant/Unpleasant"))) %>% 
-  mutate(condition = case_when(
-    condition == "Stereotype-Consistent" ~ "Association-Compatible",
-    condition == "Stereotype-Inconsistent" ~ "Association-Incompatible",
-    TRUE ~ condition
-  )) %>% 
-  mutate(model = 'DeepSeek-R1')
+  mutate(condition = as.factor(condition)) %>%
+  mutate(model = 'o3-mini')
 
-save(deepseek_r1, file = 'deepseek_r1.RData')
+save(o3mini, file = 'o3mini.RData')
 
-deepseek_r1 = deepseek_r1 %>% 
-  filter(!refusal) %>%
+o3mini = o3mini %>% 
   group_by(IAT) %>%
   mutate(tokens = scale(tokens)) %>%
   ungroup()
@@ -106,7 +100,7 @@ deepseek_r1 = deepseek_r1 %>%
 # Bar Plots --------------------------------------------------------------------
 
 # Create the plot
-ggplot(deepseek_r1, aes(x = condition, y = tokens, fill = condition)) +
+ggplot(o3mini, aes(x = condition, y = tokens, fill = condition)) +
   geom_bar(stat = "summary", fun = "mean", position = "dodge") +
   geom_errorbar(stat = "summary", fun.data = "mean_se", 
                 position = position_dodge(width = 0.9), width = 0.3) +
@@ -127,5 +121,5 @@ ggplot(deepseek_r1, aes(x = condition, y = tokens, fill = condition)) +
     panel.grid.minor = element_blank(),
     panel.spacing = unit(0.5, "lines"))
 
-ggsave('deepseek_r1.pdf', width = 10, height = 6, dpi = 'retina', device = cairo_pdf)
+ggsave('o3mini.pdf', width = 10, height = 6, dpi = 'retina', device = cairo_pdf)
 
