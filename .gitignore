@@ -176,3 +176,4 @@ cython_debug/
 *.Rhistory
 *.DS_Store
 *.RData
+*.history
