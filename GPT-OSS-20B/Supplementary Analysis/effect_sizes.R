@@ -160,12 +160,6 @@ young_old = read.csv('../young_old.csv') %>%
 
 # Effect sizes (with refusals) -------------------------------------------------
 
-cohen.d(flowers_insects %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
-        flowers_insects %>% filter(condition == 'Association Compatible') %>% pull(tokens))
-
-cohen.d(instruments_weapons %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
-        instruments_weapons %>% filter(condition == 'Association Compatible') %>% pull(tokens))
-
 cohen.d(race_original %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
         race_original %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
@@ -175,19 +169,8 @@ cohen.d(race_bertrand %>% filter(condition == 'Association Incompatible') %>% pu
 cohen.d(race_nosek %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
         race_nosek %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(career_family %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
-        career_family %>% filter(condition == 'Association Compatible') %>% pull(tokens))
-
-cohen.d(math_arts %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
-        math_arts %>% filter(condition == 'Association Compatible') %>% pull(tokens))
-
-cohen.d(science_arts %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
-        science_arts %>% filter(condition == 'Association Compatible') %>% pull(tokens))
-
 cohen.d(mental_physical %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
         mental_physical %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
-cohen.d(young_old %>% filter(condition == 'Association Incompatible') %>% pull(tokens),
-        young_old %>% filter(condition == 'Association Compatible') %>% pull(tokens))
 
 

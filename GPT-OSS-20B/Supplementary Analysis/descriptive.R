@@ -73,7 +73,7 @@ young_old = read.csv('../young_old.csv') %>%
          condition = as.factor(condition),
          IAT = "Young/Old People +\nPleasant/Unpleasant")
 
-deepseek_r1 = rbind(flowers_insects, instruments_weapons, race_original, 
+gpt20b = rbind(flowers_insects, instruments_weapons, race_original, 
                 race_bertrand, race_nosek, career_family, math_arts,
                 science_arts, mental_physical, young_old) %>% 
   mutate(IAT = factor(IAT, levels = c("Flowers/Insects +\nPleasant/Unpleasant", 
@@ -94,10 +94,10 @@ deepseek_r1 = rbind(flowers_insects, instruments_weapons, race_original,
 
 # Descriptive Statistics -------------------------------------------------------
 
-descriptive_table = deepseek_r1 %>% 
+gpt20b %>% 
   group_by(IAT, condition) %>% 
   summarise(
-    mean_token = mean(tokens, na.rm = TRUE),
-    sd_token = sd(tokens, na.rm = TRUE)
+    mean_token = sprintf("%.2f", mean(tokens, na.rm = TRUE)),
+    sd_token = sprintf("%.2f", sd(tokens, na.rm = TRUE))
   )
 
